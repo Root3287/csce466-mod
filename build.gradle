@@ -1,3 +1,5 @@
+import org.gradle.internal.os.OperatingSystem
+
 plugins {
 	id 'eclipse'
 	id 'maven-publish'
@@ -6,7 +8,7 @@ plugins {
 
 version = '1.0'
 group = 'edu.unl.csce466' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'CECE466-Mod'
+archivesBaseName = 'csce466-mod'
 
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -124,12 +126,30 @@ repositories {
 	//     dir 'libs'
 	// }
 	mavenCentral()
+	maven { url "https://raw.githubusercontent.com/kotlin-graphics/mary/master" }
+	maven { url "https://dl.bintray.com/kotlin/kotlin-dev" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url 'https://jitpack.io' }
 }
 
 ext {
 	lwjglVersion = '3.3.1'
-	imguiVersion = '1.86.10'
+	imguiVersion = '1.79+05'
 }
+
+// Based off of https://github.com/MinecraftForge/MinecraftForge/issues/8240
+// configurations {
+	// library // Create the library configuration, where our non-mod libraries will be added to
+	// implementation.extendsFrom library // Any dependency in the library configuration will also be added to the implementation configuration
+// }
+
+// minecraft.runs.all {
+// 	// Set the minecraft_classpath token to the paths of all jars in the library configuration
+// 	// This is added with the actual Minecraft classpath to get the real classpath information later on
+// 	lazyToken('minecraft_classpath') {
+// 		configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+// 	}
+// }
 
 dependencies {
 	// Specify the version of Minecraft to use. If this is any group other than 'net.minecraft', it is assumed
@@ -146,20 +166,44 @@ dependencies {
 	// For more info...
 	// http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
 	// http://www.gradle.org/docs/current/userguide/dependency_management.html
-	
-	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+    implementation fg.deobf("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
+    implementation fg.deobf("org.jetbrains.kotlin:kotlin-stdlib:1.8.20")
 
-	['', '-opengl', '-glfw'].each {
-		implementation "org.lwjgl:lwjgl$it:$lwjglVersion"
-		implementation "org.lwjgl:lwjgl$it::natives-windows"
-	}
-	
-	implementation "io.github.spair:imgui-java-binding:$imguiVersion"
-	implementation "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
-	
-	implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
+	// Kotlin-Graphics/ImGui
+	["gl", "glfw", "core"].each {
+        implementation fg.deobf("kotlin.graphics:imgui-$it:$imguiVersion") {
+            exclude group: "org.lwjgl"
+        }
+    }
+    implementation fg.deobf("kotlin.graphics:uno-core:0.7.10")
+    implementation fg.deobf("kotlin.graphics:glm:0.9.9.1-build-9")
 
+    // Spair/ImGui
+	// implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+	// ['', '-opengl', '-glfw'].each {
+	// 	implementation "org.lwjgl:lwjgl$it:$lwjglVersion"
+	// 	implementation "org.lwjgl:lwjgl$it::natives-windows"
+	// 	implementation "org.lwjgl:lwjgl$it::natives-linux"
+	// }
+	
+	// implementation "io.github.spair:imgui-java-binding:$imguiVersion"
+	// implementation "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
+	// implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
+	// implementation "io.github.spair:imgui-java-natives-linux:$imguiVersion"
 }
+
+// 
+// Fix the classpath the right way and once and for all
+// afterEvaluate {
+//     // Collect deps in runtimeClasspath but NOT in minecraft
+//     def deps = (configurations.runtimeClasspath - configurations.minecraft).join(';')
+//     // Add deps to classpath
+//     minecraft.runs.each { run ->
+//         run.token 'minecraft_classpath', deps
+//     }
+// }
+
 
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
@@ -174,6 +218,7 @@ jar {
 				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
 		])
 	}
+	// from configurations.library.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
 // Example configuration to allow publishing using the maven-publish plugin
