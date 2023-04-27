@@ -14,6 +14,13 @@ archivesBaseName = 'csce466-mod'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+
+jarJar.enable()
+
+tasks.named('jarJar') {
+    // ...
+}
+
 minecraft {
 	// The mappings can be changed at any time and must be in the following format.
 	// Channel:   Version:
@@ -137,12 +144,6 @@ ext {
 	imguiVersion = '1.79+05'
 }
 
-// Based off of https://github.com/MinecraftForge/MinecraftForge/issues/8240
-// configurations {
-	// library // Create the library configuration, where our non-mod libraries will be added to
-	// implementation.extendsFrom library // Any dependency in the library configuration will also be added to the implementation configuration
-// }
-
 // minecraft.runs.all {
 // 	// Set the minecraft_classpath token to the paths of all jars in the library configuration
 // 	// This is added with the actual Minecraft classpath to get the real classpath information later on
@@ -150,7 +151,7 @@ ext {
 // 		configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
 // 	}
 // }
-
+jarJar.fromRuntimeConfiguration()
 dependencies {
 	// Specify the version of Minecraft to use. If this is any group other than 'net.minecraft', it is assumed
 	// that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
@@ -166,17 +167,23 @@ dependencies {
 	// For more info...
 	// http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
 	// http://www.gradle.org/docs/current/userguide/dependency_management.html
-    implementation fg.deobf("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
-    implementation fg.deobf("org.jetbrains.kotlin:kotlin-stdlib:1.8.20")
+    // implementation fg.deobf("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
+    // implementation fg.deobf("org.jetbrains.kotlin:kotlin-stdlib:1.8.20")
+	minecraftLibrary "org.jetbrains.kotlin:kotlin-reflect:1.8.20"
+	minecraftLibrary "org.jetbrains.kotlin:kotlin-stdlib:1.8.20"
 
 	// Kotlin-Graphics/ImGui
 	["gl", "glfw", "core"].each {
-        implementation fg.deobf("kotlin.graphics:imgui-$it:$imguiVersion") {
-            exclude group: "org.lwjgl"
-        }
+        minecraftLibrary "kotlin.graphics:imgui-$it:$imguiVersion" 
+        // {
+        // 	exclude group: "org.lwjgl"
+        // }
     }
-    implementation fg.deobf("kotlin.graphics:uno-core:0.7.10")
-    implementation fg.deobf("kotlin.graphics:glm:0.9.9.1-build-9")
+    
+    // implementation fg.deobf("kotlin.graphics:uno-core:0.7.10")
+    // implementation fg.deobf("kotlin.graphics:glm:0.9.9.1-build-9")
+    minecraftLibrary "kotlin.graphics:uno-core:0.7.10"
+    minecraftLibrary "kotlin.graphics:glm:0.9.9.1-build-9"
 
     // Spair/ImGui
 	// implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
@@ -193,17 +200,19 @@ dependencies {
 	// implementation "io.github.spair:imgui-java-natives-linux:$imguiVersion"
 }
 
-// 
-// Fix the classpath the right way and once and for all
-// afterEvaluate {
-//     // Collect deps in runtimeClasspath but NOT in minecraft
-//     def deps = (configurations.runtimeClasspath - configurations.minecraft).join(';')
-//     // Add deps to classpath
-//     minecraft.runs.each { run ->
-//         run.token 'minecraft_classpath', deps
-//     }
-// }
-
+jarJar {
+    // Include or exclude dependencies here from runtime configuration
+    dependencies {
+        // Exclude any dependency which begins with 'com.google.gson.'
+        exclude(dependency('net.minecraftforge:forge:1.19.3-44.1.23'))
+        exclude(dependency('org.lwjgl:lwjgl-jemalloc:3.3.1'))
+        exclude(dependency('org.lwjgl:lwjgl:3.1.0'))
+    }
+}
+reobf {
+	jarJar {}
+}
+tasks.jarJar.finalizedBy("reobfJarJar")
 
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
