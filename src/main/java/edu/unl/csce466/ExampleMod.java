@@ -1,5 +1,6 @@
 package edu.unl.csce466;
 
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -26,9 +27,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import net.minecraft.network.chat.Component;
-
-import org.lwjgl.glfw.GLFW;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(ExampleMod.MODID)
@@ -48,7 +46,7 @@ public class ExampleMod{
 	// Creates a new BlockItem with the id "examplemod:example_block", combining the namespace and path
 	public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM = ITEMS.register("example_block", () -> new BlockItem(EXAMPLE_BLOCK.get(), new Item.Properties()));
 
-	public static final ImGuiScreen IMGUI_SCREEN = new ImGuiScreen();
+	public static final ImGuiScreen IMGUI_SCREEN = ImGuiScreen.getInstance();
 
 	public ExampleMod(){
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -91,13 +89,12 @@ public class ExampleMod{
 	@Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 	public static class ClientModEvents{
 		@SubscribeEvent
-		public static void onClientSetup(FMLClientSetupEvent event)
-		{
+		public static void onClientSetup(FMLClientSetupEvent event) {
 			// Some client setup code
 			LOGGER.info("HELLO FROM CLIENT SETUP");
 			LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
 
-			// IMGUI_SCREEN.init();
+			IMGUI_SCREEN.init();
 		}
 	}
 
