@@ -28,8 +28,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraft.network.chat.Component;
 
+import org.lwjgl.glfw.GLFW;
+
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(ExampleMod.MODID)
+@Mod.EventBusSubscriber(modid=ExampleMod.MODID, value=Dist.CLIENT)
 public class ExampleMod{
 	// Define mod id in a common place for everything to reference
 	public static final String MODID = "examplemod";
@@ -93,6 +96,8 @@ public class ExampleMod{
 			// Some client setup code
 			LOGGER.info("HELLO FROM CLIENT SETUP");
 			LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+
+			// IMGUI_SCREEN.init();
 		}
 	}
 
@@ -100,5 +105,9 @@ public class ExampleMod{
 	public void onKeyInput(InputEvent.Key event){
 		if(Minecraft.getInstance().player == null) return;
 		if(Minecraft.getInstance().screen != null ) return;
+		if(event.getKey() == GLFW.GLFW_KEY_L){
+			LOGGER.info("L");
+			Minecraft.getInstance().setScreen(IMGUI_SCREEN);
+		}
 	}
 }

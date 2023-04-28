@@ -3,43 +3,40 @@ package edu.unl.csce466;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import imgui.ImGui;
-import imgui.ImguiKt;
-import imgui.classes.Context;
-import imgui.impl.gl.ImplGL3;
-import imgui.impl.glfw.ImplGlfw;
+import imgui.flag.ImGuiConfigFlags;
+import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import uno.glfw.GlfwWindow;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.Objects;
 
 public class ImGuiScreen extends Screen{
-	private static ImGui imgui = ImGui.INSTANCE;
-	private static ImplGL3 imguiImplGL3;
-	private static ImplGlfw imguiImplGLFW;
+	private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
+    private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
 
-	static {
-		ImguiKt.MINECRAFT_BEHAVIORS = true;
-        GlfwWindow window = GlfwWindow.from(Minecraft.getInstance().getWindow().getWindow());
-        window.makeContextCurrent();
-        new Context();
-        imguiImplGLFW = new ImplGlfw(window, false, null);
-        imguiImplGL3 = new ImplGL3();
-	}
-	
 	public ImGuiScreen() {
 		super(Component.literal("ImGui"));
 	}
+
+	public void init(){
+		System.out.printf("GLFWWindow %d\n", Minecraft.getInstance().getWindow().getWindow());
+		GLFW.glfwMakeContextCurrent(Minecraft.getInstance().getWindow().getWindow());
+		ImGui.createContext();
+        imGuiGlfw.init(Minecraft.getInstance().getWindow().getWindow(), false);
+		imGuiGl3.init("#version 150");
+	}
 	
 	public void render(PoseStack proseStack, int x, int y, float partialTicks) {
-		imguiImplGL3.newFrame();
-		imguiImplGLFW.newFrame();
-		imgui.newFrame();
+		imGuiGlfw.newFrame();
+		ImGui.newFrame();
 		
 		// Render ImGui Here
-		boolean[] showDemo = {true};
-		imgui.showDemoWindow(showDemo);
+		ImGui.showDemoWindow();
 		
-		imgui.render();
-		imguiImplGL3.renderDrawData(imgui.getDrawData());
+		ImGui.render();
+		imGuiGl3.renderDrawData(Objects.requireNonNull(ImGui.getDrawData()));
 	}
 }
