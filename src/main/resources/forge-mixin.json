@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"minVersion": 0.8,
+	"package": "edu.unl.csce466.mixins",
+	"mixins": [
+	],
+	"client": [
+		"RenderSystemMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"refmap": "forge-mixin-refmap.json"
+}

@@ -5,7 +5,9 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
+import edu.unl.csce466.screens.ImGuiScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -93,8 +95,8 @@ public class ExampleMod{
 			// Some client setup code
 			LOGGER.info("HELLO FROM CLIENT SETUP");
 			LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
-
-			IMGUI_SCREEN.init();
+			
+			IMGUI_SCREEN.getInstance().init();
 		}
 	}
 

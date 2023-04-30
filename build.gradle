@@ -1,12 +1,25 @@
 import org.gradle.internal.os.OperatingSystem
 
+buildscript {
+	repositories {
+		maven { url = 'https://files.minecraftforge.net/maven' }
+		maven { url = 'https://repo.spongepowered.org/maven' }
+		mavenCentral()
+	}
+	dependencies {
+		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+	}
+}
+
 plugins {
 	id 'eclipse'
 	id 'maven-publish'
 	id 'org.jetbrains.kotlin.jvm' version '1.8.0'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.0'
+	id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.0'
 	id 'net.minecraftforge.gradle' version '5.1.+'
 }
+apply plugin: 'org.spongepowered.mixin'
 
 version = '1.0'
 group = 'edu.unl.csce466' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -20,7 +33,7 @@ println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty '
 jarJar.enable()
 
 tasks.named('jarJar') {
-    // ...
+	// ...
 }
 
 minecraft {
@@ -137,9 +150,10 @@ repositories {
 	mavenCentral()
 	maven { url "https://raw.githubusercontent.com/kotlin-graphics/mary/master" }
 	maven { url "https://dl.bintray.com/kotlin/kotlin-dev" }
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-    maven { url "https://thedarkcolour.github.io/KotlinForForge/" }
-    maven { url 'https://jitpack.io' }
+	maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+	maven { url "https://thedarkcolour.github.io/KotlinForForge/" }
+	maven { url 'https://jitpack.io' }
+	maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
 }
 
 ext {
@@ -161,6 +175,12 @@ dependencies {
 	// The userdev artifact is a special name and will get all sorts of transformations applied to it.
 	minecraft 'net.minecraftforge:forge:1.19.3-44.1.23'
 
+	// Mixins
+	// classpath 'org.spongepowered:mixingradle:0.7.+'
+	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+	// clientAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+	// apiAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
 	// Real mod deobf dependency examples - these get remapped to your current mappings
 	// implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency
 
@@ -170,13 +190,13 @@ dependencies {
 	// For more info...
 	// http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
 	// http://www.gradle.org/docs/current/userguide/dependency_management.html
-    // implementation fg.deobf("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
-    // implementation fg.deobf("org.jetbrains.kotlin:kotlin-stdlib:1.8.20")
-    
-    // implementation fg.deobf("kotlin.graphics:uno-core:0.7.10")
-    // implementation fg.deobf("kotlin.graphics:glm:0.9.9.1-build-9")
+	// implementation fg.deobf("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
+	// implementation fg.deobf("org.jetbrains.kotlin:kotlin-stdlib:1.8.20")
+	
+	// implementation fg.deobf("kotlin.graphics:uno-core:0.7.10")
+	// implementation fg.deobf("kotlin.graphics:glm:0.9.9.1-build-9")
 
-    // Spair/ImGui
+	// Spair/ImGui
 	// implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
 	// ['', '-opengl', '-glfw'].each {
@@ -191,13 +211,21 @@ dependencies {
 		}
 		jarJar(group: "io.github.spair", name: "imgui-java-${it}", version: "[0,)") {
 			transitive(false)
-	    	exclude group: "org.lwjgl"
+			exclude group: "org.lwjgl"
 		}
 	}
 	// implementation "io.github.spair:imgui-java-binding:$imguiVersion"
 	// implementation "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
 	// implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
 	// implementation "io.github.spair:imgui-java-natives-linux:$imguiVersion"
+}
+
+mixin {
+	// add sourceSets.main, 'forge-mixin.refmap.json'
+	config 'forge-mixin.json'
+
+    debug.verbose = true
+    debug.export = true
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
@@ -210,7 +238,8 @@ jar {
 				"Implementation-Title"    : project.name,
 				"Implementation-Version"  : project.jar.archiveVersion,
 				"Implementation-Vendor"   : "examplemodsareus",
-				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+				"MixinConfigs"			  : "forge-mixin.json"
 		])
 	}
 	// from configurations.library.collect { it.isDirectory() ? it : zipTree(it) }
