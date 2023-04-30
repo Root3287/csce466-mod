@@ -66,10 +66,10 @@ public class ImGuiRenderer {
 		imGuiGl.renderDrawData(Objects.requireNonNull(ImGui.getDrawData()));
 		
 		if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
-            final long backupWindowPtr = GLFW.glfwGetCurrentContext();
-            ImGui.updatePlatformWindows();
-            ImGui.renderPlatformWindowsDefault();
-            GLFW.glfwMakeContextCurrent(backupWindowPtr);
-        }
+			final long backupWindowPtr = GLFW.glfwGetCurrentContext();
+			ImGui.updatePlatformWindows();
+			ImGui.renderPlatformWindowsDefault();
+			GLFW.glfwMakeContextCurrent(backupWindowPtr);
+		}
 	}
 }
