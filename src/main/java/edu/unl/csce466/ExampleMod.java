@@ -1,5 +1,18 @@
 package edu.unl.csce466;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.common.util.LogicalSidedProvider;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.LogicalSide;
+import org.joml.Vector3d;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
@@ -30,6 +43,9 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.client.ClientCommandHandler;
+
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(ExampleMod.MODID)
 @Mod.EventBusSubscriber(modid=ExampleMod.MODID, value=Dist.CLIENT)
@@ -50,6 +66,10 @@ public class ExampleMod{
 
 	public static final ImGuiScreen IMGUI_SCREEN = ImGuiScreen.getInstance();
 
+	public void Begin() {
+
+	}
+
 	public ExampleMod(){
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
@@ -68,6 +88,23 @@ public class ExampleMod{
 		// Register the item to a creative tab
 		modEventBus.addListener(this::addCreative);
 	}
+
+	public static class Zeus {
+
+		public void Init()
+		{
+			System.out.println("Zeus Activated");
+
+			Player player = Minecraft.getInstance().player;
+
+			ClientCommandHandler.runCommand("say hello");
+
+			//PlayerInteractEvent.RightClickEmpty // do event handling
+		}
+
+
+	}
+
 
 	private void commonSetup(final FMLCommonSetupEvent event){
 		// Some common setup code
@@ -88,14 +125,14 @@ public class ExampleMod{
 	}
 
 	// You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-	@Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-	public static class ClientModEvents{
+	@Mod.EventBusSubscriber(modid = MODID,  bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+	public static class ClientModEvents {
 		@SubscribeEvent
 		public static void onClientSetup(FMLClientSetupEvent event) {
 			// Some client setup code
 			LOGGER.info("HELLO FROM CLIENT SETUP");
 			LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
-			
+
 			IMGUI_SCREEN.getInstance().init();
 		}
 	}

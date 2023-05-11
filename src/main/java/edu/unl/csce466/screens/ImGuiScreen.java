@@ -7,6 +7,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiConfigFlags;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import edu.unl.csce466.ExampleMod;
 
 public class ImGuiScreen extends Screen{
 	
@@ -26,7 +27,25 @@ public class ImGuiScreen extends Screen{
 	
 	public void render(PoseStack proseStack, int x, int y, float partialTicks) {
 		ImGuiRenderer.getInstance().draw(()->{
-			ImGui.showDemoWindow();
+			//ImGui.showDemoWindow();
+			ShowModMenu();
 		});
+	}
+
+	private void ShowModMenu()
+	{
+		// init zeus class
+		ExampleMod.Zeus zeus = new ExampleMod.Zeus();
+
+		//zeus menu
+		if (ImGui.beginMenu("Zeus")) {
+			ImGui.text("Channel your inner thunder!");
+			if (ImGui.button("Activate"))
+			{
+				zeus.Init();
+			}
+			ImGui.endMenu();
+		}
+
 	}
 }
