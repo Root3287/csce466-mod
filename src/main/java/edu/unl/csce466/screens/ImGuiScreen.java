@@ -38,12 +38,24 @@ public class ImGuiScreen extends Screen{
 		ExampleMod.Zeus zeus = new ExampleMod.Zeus();
 
 		//zeus menu
-		if (ImGui.beginMenu("Zeus")) {
-			ImGui.text("Channel your inner thunder!");
-			if (ImGui.button("Activate"))
-			{
-				zeus.Init();
-			}
+		//if (ImGui.beginMenu("Zeus")) {
+		//	ImGui.text("Channel your inner thunder!");
+		//	if (ImGui.button("Activate"))
+		//	{
+		//		zeus.Init();
+		//	}
+		//	ImGui.endMenu();
+		//}
+
+		if (ImGui.beginMenu("Level Up"))
+		{
+			if (ImGui.button("Level Up!")) { zeus.LevelUp();}
+			ImGui.endMenu();
+		}
+
+		if (ImGui.beginMenu("Health"))
+		{
+			if (ImGui.button("Health boost")) { zeus.Health();}
 			ImGui.endMenu();
 		}
 

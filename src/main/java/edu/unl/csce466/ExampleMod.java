@@ -2,6 +2,7 @@ package edu.unl.csce466;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import edu.unl.csce466.event.ModEvents;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -96,10 +97,25 @@ public class ExampleMod{
 			System.out.println("Zeus Activated");
 
 			Player player = Minecraft.getInstance().player;
+			player.sendSystemMessage(Component.literal("You feel a surge of electricity course through your veins..."));
 
-			ClientCommandHandler.runCommand("say hello");
+			ModEvents.ForgeEvents.start = true;
+
+
 
 			//PlayerInteractEvent.RightClickEmpty // do event handling
+		}
+
+		public void LevelUp()
+		{
+			Player player = Minecraft.getInstance().player;
+			player.giveExperienceLevels(50);
+		}
+
+		public void Health()
+		{
+			Player player = Minecraft.getInstance().player;
+			player.setAbsorptionAmount(100);
 		}
 
 
