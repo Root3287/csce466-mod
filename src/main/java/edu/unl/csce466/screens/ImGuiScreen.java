@@ -59,5 +59,17 @@ public class ImGuiScreen extends Screen{
 			ImGui.endMenu();
 		}
 
+		if (ImGui.beginMenu("Diamonds"))
+		{
+			if (ImGui.button("Give Diamonds")) { zeus.GiveDiamonds();}
+			ImGui.endMenu();
+		}
+
+		if (ImGui.beginMenu("Stick"))
+		{
+			if (ImGui.button("Stick!")) { zeus.Stick();}
+			ImGui.endMenu();
+		}
+
 	}
 }

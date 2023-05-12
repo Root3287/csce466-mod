@@ -25,6 +25,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -40,6 +43,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -95,15 +99,10 @@ public class ExampleMod{
 		public void Init()
 		{
 			System.out.println("Zeus Activated");
-
 			Player player = Minecraft.getInstance().player;
 			player.sendSystemMessage(Component.literal("You feel a surge of electricity course through your veins..."));
 
 			ModEvents.ForgeEvents.start = true;
-
-
-
-			//PlayerInteractEvent.RightClickEmpty // do event handling
 		}
 
 		public void LevelUp()
@@ -118,6 +117,19 @@ public class ExampleMod{
 			player.setAbsorptionAmount(100);
 		}
 
+		public void GiveDiamonds() {
+			Player player = Minecraft.getInstance().player;
+			ItemStack i = new ItemStack(Items.DIAMOND, 64);
+			ItemHandlerHelper.giveItemToPlayer(player, i);
+		}
+
+		public void Stck() {
+			Player player = Minecraft.getInstance().player;
+			ItemStack i = new ItemStack(Items.STICK, 1);
+			i.enchant(Enchantment.byId(16), 100);
+			ItemHandlerHelper.giveItemToPlayer(player, i);
+
+		}
 
 	}
 

@@ -36,7 +36,7 @@ public class ImGuiRenderer {
 		ImGui.createContext();
 		config.execute();
 		imGuiGlfw.init(Minecraft.getInstance().getWindow().getWindow(), false);
-		imGuiGl.init();
+		imGuiGl.init("#version 410 core");
 	}
 	
 	public void preDraw(ImGuiCall drawCall) {
