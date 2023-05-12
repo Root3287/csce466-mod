@@ -123,7 +123,7 @@ public class ExampleMod{
 			ItemHandlerHelper.giveItemToPlayer(player, i);
 		}
 
-		public void Stck() {
+		public void Stick() {
 			Player player = Minecraft.getInstance().player;
 			ItemStack i = new ItemStack(Items.STICK, 1);
 			i.enchant(Enchantment.byId(16), 100);
